@@ -3,6 +3,21 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     concat: {
+      dist: {
+        src: [
+          'public/lib/jquery.js',
+          'public/lib/underscore.js',
+          'public/lib/handlebars.js',
+          'public/lib/backbone.js',
+        ],
+        dest: 'public/dist/output.js'
+      },
+      lol: {
+        src: [
+          'public/client/**/*.js',
+        ],
+        dest: 'public/dist/clientoutput.js'
+      }
     },
 
     mochaTest: {
@@ -21,11 +36,24 @@ module.exports = function(grunt) {
     },
 
     uglify: {
+      my_target1: {
+        files: {
+          'public/dist/output.min.js': ['public/dist/output.js']
+        }
+      },
+      my_target2: {
+        files: {
+          'public/dist/clientoutput.min.js': ['public/dist/clientoutput.js']
+        }
+      }
     },
 
     jshint: {
-      files: [
-        // Add filespec list here
+      beforeconcat: [
+        // 'views/**/*.jspublic'
+      ],
+      afterconcat:[
+        'dist/output.js'
       ],
       options: {
         force: 'true',
@@ -38,6 +66,15 @@ module.exports = function(grunt) {
     },
 
     cssmin: {
+      target: {
+        files: [{
+          expand: true,
+          cwd: 'public',
+          src:['*.css', '!*.min.css'],
+          dest: 'public/dist',
+          ext: '.min.css'
+        }]
+      }
     },
 
     watch: {
@@ -94,6 +131,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('build', [
+    'concat', 'uglify', 'cssmin'
   ]);
 
   grunt.registerTask('upload', function(n) {
